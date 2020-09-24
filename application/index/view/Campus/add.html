@@ -1,0 +1,73 @@
+{include file="public:header"}      
+{include file="public:body"}    
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{:url('index/index')}">首页</a></li>
+    <li class="breadcrumb-item"><a href="{:url('campus/index')}">校区列表</a></li>
+    <li class="breadcrumb-item active" aria-current="page">校区添加</li>
+</ol>
+
+<div class="row">
+    <div class="col-lg-12 col-xl-2 col-md-12 col-sm-12"></div>
+    <div class="col-lg-12 col-xl-8 col-md-12 col-sm-12">
+        <div class="card ">
+            <div class="card-header">
+                <h4>校区添加</h4>
+            </div>
+            <div class="card-body cards">
+                <form id="form" class="form-horizontal" method="" enctype="multipart/form-data"  target="addfile">
+                    <div class="form-group row">
+                        <div class="col-md-1"></div>
+                        <label class="col-md-2 col-form-label" for="campusname">校区名<span style="color:rgb(255,182,193); font-size: 10px;">（必填）</span></label>
+                        <div class="col-md-8">
+                            <input id="campusname" type="text" class="form-control" placeholder="校区名" name="campusname" >
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                         <div class="col-md-1"></div>
+                        <label class="col-md-2 col-form-label" for="address">校区地址<span style="color:rgb(255,182,193); font-size: 10px;">（必填）</span></label>
+                        <div class="col-md-8">
+                            <input type="text" id="address" name="address" class="form-control" placeholder="地址"  >
+                        </div>
+                    </div>
+                    <div class="form-group mb-0 mt-2 row justify-content-end">
+                        <div class="col-md-12 text-center">
+                            <button type="submit" class="btn btn-primary">提 交</button>
+                            <a href="{:url('campus/index')}" class="btn btn-outline-info">返 回</a> 
+                        </div>
+                    </div>
+                    
+                </form>
+                <iframe id="addfile_iframe" src="" name="addfile" style="display: none;" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12 col-xl-2 col-md-12 col-sm-12"></div>
+    
+</div>
+  
+{include file="public:footer"}
+<script type="text/javascript">
+    $("#form").submit(function(){
+        var formData = $("#form").serialize();//serialize() 方法通过序列化表单值，创建 URL 编码文本
+        $.ajax({
+            type:'post',
+            url:"{:url('/index/campus/addDB')}",
+            data:formData,
+            dataType:'json',
+            success:function(data){
+                if(data.status==1){
+                    toastr.success('', data.msg);
+                    setTimeout("location.reload()",1000);//设置延迟时间执行
+                }else{
+                    toastr.error('', data.msg);
+                }
+            },
+            error:function(msg){
+                
+                toastr.error('请联系管理员', '系统错误');
+                
+            }
+        })
+    
+    });
+</script>

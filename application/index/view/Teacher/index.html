@@ -1,0 +1,176 @@
+{include file="public:header"}	
+<!--DataTables css-->
+<link rel="stylesheet" href="__STATIC__/plugins/Datatable/css/dataTables.bootstrap4.css">
+
+{include file="public:body"}	
+
+	<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">首页</a></li>
+        <li class="breadcrumb-item active" aria-current="page">教师管理</li>
+    </ol>
+
+	<div class="section-body">
+		<div class="row">
+			<div class="col-12">
+				<div class="card">
+					<div class="card-header">
+						<div class="float-right">
+							<form>
+								<div class="input-group">
+									<input type="text" class="form-control" placeholder="Search" name="keyword"  value="{$keyword}">
+									<div class="input-group-btn">
+										<button class="btn btn-primary"><i class="ion ion-search"></i></button>
+									</div>
+								</div>
+							</form>
+						</div>
+						<h4>教师列表</h4>
+					</div>
+					<div class=" col-lg-12" style="margin-top:20px;margin-bottom: -10px;">
+						<div class="float-left" style="margin-right: 10px;">
+							<a href="{:url('admin/add')}" class="btn btn-primary">导入</a> 
+						</div>
+						<div class="float-left" style="margin-right: 10px;">
+							<a href="{:url('admin/add')}" class="btn btn-primary">导出</a> 
+						</div>
+						<div class="float-left">
+							<button type="submit" class="btn btn-danger" onclick="moreDel()" name="moreDel">批量删除</button> 
+						</div>
+						<div class="float-right col-lg-4">
+							
+						</div> 
+						
+					</div>
+					<div class="card-body">
+						<div class="table-responsive">
+						<table id="example" class="table table-striped table-bordered border-t0 text-nowrap w-100" >
+							<thead>
+								<tr class="text-center">
+									<th class="row-selected">
+										<div class="custom-control custom-control-inline custom-checkbox custom-control-nameless m-0 align-top">
+											<input  onclick="selectAll(this)" class="custom-control-input" id="checkall" type="checkbox"> <label class="custom-control-label" for="checkall">全选/全不选</label>
+										</div>
+									</th>
+									<th class="wd-10p">序号</th>
+									<th class="wd-20p">用户名</th>
+									<th class="wd-15p">管理员编号</th>
+									<th class="wd-20p">真实姓名</th>
+									<th class="wd-10p">性别</th>
+									<th class="wd-15p">手机号</th>
+									<th class="wd-15p">邮箱</th>
+									<th class="wd-15p">状态</th>
+									<th class="wd-25p">操作</th>
+								</tr>
+							</thead>
+							<tbody>
+								{volist name='list' id="vo"}
+								<tr class="text-center">
+									<td>
+										<div class="custom-control custom-control-inline custom-checkbox custom-control-nameless m-0 align-top">
+											
+											<input class="custom-control-input" name="choice" id="choice{$vo.id}" value="{$vo.id}" type="checkbox">
+											
+											<label class="custom-control-label" for="choice{$vo.id}"></label>
+										</div>
+									</td>
+									<td>{$i}</td>
+									<td>{$vo.username}</td>
+									<td>{$vo.num}</td>
+									<td>{$vo.penname}</td>
+									<td>{$vo.sex}</td>
+									<td>{$vo.phone}</td>
+									<td>{$vo.email}</td>
+									<td>
+										{if condition="$vo.status=='删除'"} 
+										<div class="badge badge-danger">{$vo.status}</div>
+										{elseif condition="$vo.status == '禁用'"/}
+										<div class="badge badge-warning">{$vo.status}</div>
+										{else /} <div class="badge badge-success">{$vo.status}</div>
+										{/if}
+									</td>
+									
+									<td>
+										<div class="btn-group align-top ">
+											
+											{if condition="$vo['status'] neq  '正常'"}
+											<button onclick="btn({$vo.id},'start','store')" class="btn btn-sm btn-info  m-b-5 m-t-5" >启用</button>
+											{else/}
+											<button onclick="btn({$vo.id},'stop','store')" class="btn btn-sm btn-warning  m-b-5 m-t-5" >禁用</button>
+											{/if}
+											
+										</div>
+										<div class="btn-group align-top">
+											<a href="{:url('Teacher/detail?id='.$vo['id'])}" class="btn btn-sm btn-info m-b-5 m-t-5">查看详情</a>
+										</div>
+										
+										<div class="btn-group align-top">
+											<a href="{:url('Teacher/edit?id='.$vo['id'])}" class="btn btn-sm btn-primary m-b-5 m-t-5">修改密码</a>
+										</div>
+										<div class="btn-group align-top">
+											<button onclick="btn({$vo.id},'','delete')" class="btn btn-sm btn-danger m-b-5 m-t-5 ajax-get"><i class="fa fa-trash"></i></button>
+										</div>
+										
+									</td>
+								
+								</tr>
+								{/volist}
+							</tbody>
+						</table>
+					</div>
+					
+					<div class="pagelist">
+					   {$page}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{include file="public:footer"}
+<!--DataTables css-->
+<script src="__STATIC__/plugins/Datatable/js/jquery.dataTables.js"></script>
+<script src="__STATIC__/plugins/Datatable/js/dataTables.bootstrap4.js"></script>
+<script>
+	
+	function selectAll(choiceBtn){
+	    var arr=document.getElementsByName("choice");
+	    for(var i=0;i<arr.length;i++){
+	        arr[i].checked=choiceBtn.checked;//循环遍历看是否全选
+	    }
+    }
+    function btn(id,method,action){
+    	var url="{:url('Teacher/"+action+"')}";
+    	var data={'method':method,'id':id};
+    	AjaxGet(url,data);
+    }
+ 
+    function moreDel(){
+    	var obj=document.getElementsByName('choice');
+    	check_val=[];
+    	for(k in obj){
+    		if(obj[k].checked){
+    			check_val.push(obj[k].value);
+    		}
+    	}
+    	$.ajax({
+    		type:'post',
+    		url:"{:url('Teacher/deletes')}",
+    		data:{check_val},
+    		dataType:'json',
+			success:function(data){
+				if(data.status==1){
+					// $(".table").load(location.href+".table");
+					$("#example").load(location.href + " #example");
+					toastr.success('', data.msg);
+				}else{
+					toastr.error('', data.msg);
+					// location.reload();
+				}
+			},
+			error:function(msg){
+				toastr.error('','系统错误，请联系管理员！');
+				
+			}
+    	})
+    };
+
+</script>
